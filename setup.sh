@@ -43,7 +43,7 @@ sudo sed -i '$a Alias /phpmyadmin /usr/share/phpmyadmin' /etc/apache2/sites-avai
 
 # Clone and configure theme for OGP
 cd /var/www/html/themes/
-git clone https://github.com/hmrserver/Obsidian.git
+git clone https://github.com/Reignsia/Obsidian
 mv Obsidian/themes/Obsidian/* Obsidian/
 rmdir Obsidian/themes/Obsidian
 
