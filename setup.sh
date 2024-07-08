@@ -58,31 +58,34 @@ sudo systemctl enable mariadb
 sudo systemctl enable mysql
 
 # Install and configure fail2ban
-sudo apt update
-sudo apt install fail2ban -y
-sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
-sudo cp /etc/fail2ban/jail.local /etc/fail2ban/jail.local.bak
 
-# Configure fail2ban jail.local
-sudo sed -i '$a [DEFAULT]\nbantime = 600\nmaxretry = 50\nfindtime = 600\n' /etc/fail2ban/jail.local
-sudo sed -i '$a [tcp-iptables]\nenabled = true\nfilter = tcp-iptables\naction = iptables[name=TCP, port=all, protocol=tcp]\nlogpath = /var/log/auth.log\n' /etc/fail2ban/jail.local
-sudo sed -i '$a [udp-iptables]\nenabled = true\nfilter = udp-iptables\naction = iptables[name=UDP, port=all, protocol=udp]\nlogpath = /var/log/auth.log\n' /etc/fail2ban/jail.local
+# Install Fail2Ban if not already installed
+sudo apt-get update
+sudo apt-get install -y fail2ban
 
-# Create fail2ban filters
-sudo bash -c 'cat > /etc/fail2ban/filter.d/tcp-iptables.conf <<EOL
+# Define the custom filter for UDP flood
+sudo tee /etc/fail2ban/filter.d/udp-flood.conf > /dev/null <<'EOF'
 [Definition]
-failregex = .*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*
+failregex = .*SRC=<HOST> .*DPT=<port>.*UDP.*
 ignoreregex =
-EOL'
+EOF
 
-sudo bash -c 'cat > /etc/fail2ban/filter.d/udp-iptables.conf <<EOL
-[Definition]
-failregex = .*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*:.*
-ignoreregex =
-EOL'
+# Define the custom jail configuration
+sudo tee -a /etc/fail2ban/jail.local > /dev/null <<'EOF'
+[udp-flood]
+enabled = true
+filter = udp-flood
+action = iptables[name=UDP, port=<port>, protocol=udp]
+logpath = /var/log/syslog  ; Adjust this path based on your system's logs
+maxretry = 10   ; Number of retries before banning
+bantime = 3600  ; Duration (in seconds) for which the IP will be banned
+findtime = 600  ; Time window (in seconds) during which "maxretry" attempts are counted
+EOF
 
+# Restart Fail2Ban to apply the changes
 sudo systemctl restart fail2ban
-sudo systemctl enable fail2ban
+
+echo "Fail2Ban setup complete for UDP flood protection."
 
 sudo apt update
 sudo apt install ufw
