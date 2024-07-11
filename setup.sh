@@ -1,88 +1,69 @@
 #!/bin/bash
 
-# Install necessary packages
-apt-get update
-apt-get install -y apache2 curl subversion php7.4 php7.4-gd php7.4-zip libapache2-mod-php7.4 php7.4-curl php7.4-mysql php7.4-xmlrpc php-pear mariadb-server php7.4-mbstring git php-bcmath
+sudo apt-get update
+sudo apt-get install -y apache2 curl subversion php7.4 php7.4-gd php7.4-zip libapache2-mod-php7.4 php7.4-curl php7.4-mysql php7.4-xmlrpc php-pear mariadb-server php7.4-mbstring git php-bcmath
 
-# Configure MariaDB bind-address
-sed -i "s/^bind-address.*/bind-address=0.0.0.0/g" "/etc/mysql/mariadb.conf.d/50-server.cnf"
+sudo sed -i "s/^bind-address.*/bind-address=0.0.0.0/g" "/etc/mysql/mariadb.conf.d/50-server.cnf"
 
-# Install phpMyAdmin
-apt-get install -y phpmyadmin
+sudo apt-get install -y phpmyadmin
 
-# Download and install OGP panel
-wget -N "https://github.com/OpenGamePanel/Easy-Installers/raw/master/Linux/Debian-Ubuntu/ogp-panel-latest.deb" -O "ogp-panel-latest.deb"
-dpkg -i "ogp-panel-latest.deb"
+sudo wget -N "https://github.com/OpenGamePanel/Easy-Installers/raw/master/Linux/Debian-Ubuntu/ogp-panel-latest.deb" -O "ogp-panel-latest.deb"
+sudo dpkg -i "ogp-panel-latest.deb"
 
-# Install additional packages
-apt-get install -y libxml-parser-perl libpath-class-perl perl-modules screen rsync sudo e2fsprogs unzip subversion pure-ftpd libarchive-zip-perl libc6 libgcc1 git curl
-apt-get install -y libc6-i386
-apt-get install -y lib32gcc1
-apt-get install -y lib32gcc-s1
-apt-get install -y libhttp-daemon-perl
-apt-get install -y libarchive-extract-perl
+sudo apt-get install -y libxml-parser-perl libpath-class-perl perl-modules screen rsync sudo e2fsprogs unzip subversion pure-ftpd libarchive-zip-perl libc6 libgcc1 git curl
+sudo apt-get install -y libc6-i386
+sudo apt-get install -y lib32gcc1
+sudo apt-get install -y lib32gcc-s1
+sudo apt-get install -y libhttp-daemon-perl
+sudo apt-get install -y libarchive-extract-perl
 
-# Enable 32-bit architecture
-dpkg --add-architecture i386
-apt-get update
-apt-get install -y libstdc++6:i386
+sudo dpkg --add-architecture i386
+sudo apt-get update
+sudo apt-get install -y libstdc++6:i386
 
-# Download and install OGP agent
-wget -N "https://github.com/OpenGamePanel/Easy-Installers/raw/master/Linux/Debian-Ubuntu/ogp-agent-latest.deb" -O "ogp-agent-latest.deb"
-dpkg -i "ogp-agent-latest.deb"
+sudo wget -N "https://github.com/OpenGamePanel/Easy-Installers/raw/master/Linux/Debian-Ubuntu/ogp-agent-latest.deb" -O "ogp-agent-latest.deb"
+sudo dpkg -i "ogp-agent-latest.deb"
 
-# Configure PHP settings
 sudo sed -i 's/^post_max_size = 8M/post_max_size = 900M/' /etc/php/7.4/apache2/php.ini
 sudo sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 900M/' /etc/php/7.4/apache2/php.ini
 
-# Configure Apache for phpMyAdmin
 sudo sed -i '$a Alias /phpmyadmin /usr/share/phpmyadmin' /etc/apache2/sites-available/000-default.conf
 
-# Set up cron job for cache dropping
 (crontab -l 2>/dev/null; echo "0 * * * * echo 3 > /proc/sys/vm/drop_caches") | crontab -
 
-# Clone and configure theme for OGP
 cd /var/www/html/themes/
-git clone https://github.com/Reignsia/Obsidian
-mv Obsidian/themes/Obsidian/* Obsidian/
-rmdir Obsidian/themes/Obsidian
+sudo git clone https://github.com/Reignsia/Obsidian
+sudo mv Obsidian/themes/Obsidian/* Obsidian/
+sudo rmdir Obsidian/themes/Obsidian
 
-# Secure MariaDB installation
 sudo mysql_secure_installation
 
-# Enable and restart services
 sudo systemctl restart apache2
 sudo systemctl enable apache2
 sudo systemctl enable ogp_agent
 sudo systemctl enable mariadb
 sudo systemctl enable mysql
 
-# Install and configure fail2ban
-
-# Install Fail2Ban if not already installed
 sudo apt-get update
 sudo apt-get install -y fail2ban
 
-# Define the custom filter for UDP flood
 sudo tee /etc/fail2ban/filter.d/udp-flood.conf > /dev/null <<'EOF'
 [Definition]
 failregex = .*SRC=<HOST> .*DPT=<port>.*UDP.*
 ignoreregex =
 EOF
 
-# Define the custom jail configuration
 sudo tee -a /etc/fail2ban/jail.local > /dev/null <<'EOF'
 [udp-flood]
 enabled = true
 filter = udp-flood
 action = iptables[name=UDP, port=<port>, protocol=udp]
-logpath = /var/log/syslog  ; Adjust this path based on your system's logs
-maxretry = 10   ; Number of retries before banning
-bantime = 3600  ; Duration (in seconds) for which the IP will be banned
-findtime = 600  ; Time window (in seconds) during which "maxretry" attempts are counted
+logpath = /var/log/syslog
+maxretry = 10
+bantime = 3600
+findtime = 600
 EOF
 
-# Restart Fail2Ban to apply the changes
 sudo systemctl restart fail2ban
 
 echo "Fail2Ban setup complete for UDP flood protection."
@@ -92,6 +73,6 @@ sudo apt install ufw
 sudo ufw enable
 sudo ufw allow proto tcp from any to any
 sudo ufw allow proto udp from any to any
-# Display credentials
+
 sudo cat /root/ogp_user_password
 sudo cat /root/ogp_panel_mysql_info
