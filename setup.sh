@@ -44,30 +44,6 @@ sudo systemctl enable ogp_agent
 sudo systemctl enable mariadb
 sudo systemctl enable mysql
 
-sudo apt-get update
-sudo apt-get install -y fail2ban
-
-sudo tee /etc/fail2ban/filter.d/udp-flood.conf > /dev/null <<'EOF'
-[Definition]
-failregex = .*SRC=<HOST> .*DPT=<port>.*UDP.*
-ignoreregex =
-EOF
-
-sudo tee -a /etc/fail2ban/jail.local > /dev/null <<'EOF'
-[udp-flood]
-enabled = true
-filter = udp-flood
-action = iptables[name=UDP, port=<port>, protocol=udp]
-logpath = /var/log/syslog
-maxretry = 10
-bantime = 3600
-findtime = 600
-EOF
-
-sudo systemctl restart fail2ban
-
-echo "Fail2Ban setup complete for UDP flood protection."
-
 sudo apt update
 sudo apt install ufw
 sudo ufw enable
