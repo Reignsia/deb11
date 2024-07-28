@@ -1,5 +1,9 @@
 #!/bin/bash
 
+sudo service fastnetmon enable
+sudo service fastnetmon restart
+sudo service fastnetmon start
+
 # Configure FastNetMon settings
 sudo fcli set main networks_list 11.22.33.0/22
 sudo fcli set main networks_list 0.0.0.0/1
