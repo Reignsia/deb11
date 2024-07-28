@@ -30,28 +30,6 @@ sudo systemctl restart fastnetmon
 echo "======| Finished netflow main set |======"
 sleep 5
 
-sudo fcli set main netflow_sampling_ratio 1
-sudo fcli commit
-
-sudo fcli set main average_calculation_time 45
-sudo fcli commit
-
-sudo fcli set main netflow_count_packets_per_device true
-sudo fcli commit
-
-sudo fcli set main netflow_socket_read_mode recvmsg
-sudo fcli commit
-
-sudo fcli set main netflow_multi_thread_processing true
-sudo fcli set main netflow_threads_per_port 2
-sudo fcli commit
-
-sudo fcli set main netflow_multi_thread_mode random
-sudo fcli commit
-sudo service fastnetmon restart
-sudo systemctl restart fastnetmon
-echo "======| Finished netflow configuration |======"
-sleep 5
 # Update and install Softflowd
 sudo apt update
 sudo apt install -y softflowd
@@ -62,6 +40,8 @@ sudo softflowd -i eth0 -n 127.0.0.1:2055
 # Add NetFlow configuration to FastNetMon config file
 echo -e "netflow = on\nnetflow_port = 2055" | sudo tee -a /etc/init/fastnetmon.conf
 
+echo "======| Installed Netflow |======"
+sleep 5
 # Start and restart FastNetMon service
 sudo service fastnetmon start
 sudo service fastnetmon restart
@@ -85,8 +65,32 @@ EOF'
 sudo systemctl enable softflowd
 sudo systemctl start softflowd
 
+echo "======| Configured Softflowd |======"
+sleep 5
+
+sudo fcli set main netflow_sampling_ratio 1
+sudo fcli commit
+
+sudo fcli set main average_calculation_time 45
+sudo fcli commit
+
+sudo fcli set main netflow_count_packets_per_device true
+sudo fcli commit
+
+sudo fcli set main netflow_socket_read_mode recvmsg
+sudo fcli commit
+
+sudo fcli set main netflow_multi_thread_processing true
+sudo fcli set main netflow_threads_per_port 2
+sudo fcli commit
+
+sudo fcli set main netflow_multi_thread_mode random
+sudo fcli commit
+sudo service fastnetmon restart
+sudo systemctl restart fastnetmon
+echo "======| Finished netflow configuration |======"
+sleep 5
 # Install and configure UFW
-sudo apt install -y ufw
 
 sudo service fastnetmon restart
 sudo systemctl softflowd restart
