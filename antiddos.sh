@@ -1,19 +1,31 @@
 #!/bin/bash
 
+sudo apt install -y ufw
+sudo ufw allow proto tcp from any to any
+sudo ufw allow proto udp from any to any
+sudo ufw default allow outgoing
+sudo ufw enable
 sudo systemctl restart fastnetmon
-
+sudo service fastnetmon start
+sudo service fastnetmon restart
+echo "Fastnetmon and UFW is Enabled/Restarted"
+sleep 5
 # Configure FastNetMon settings
 sudo fcli set main networks_list 11.22.33.0/22
 sudo fcli set main networks_list 0.0.0.0/1
 sudo fcli set main networks_list 127.0.0.1/1
 sudo fcli set main networks_list beef::1/64
 sudo fcli commit
+echo "Finished network list"
+sleep 5
 
 sudo fcli set main netflow enable
 sudo fcli set main netflow_ports 2055
 sudo fcli set main netflow_host 0.0.0.0
 sudo fcli set main netflow_host ::
 sudo fcli commit
+echo "Finished netflow main set"
+sleep 5
 
 sudo fcli set main netflow_sampling_ratio 1
 sudo fcli commit
@@ -33,7 +45,8 @@ sudo fcli commit
 
 sudo fcli set main netflow_multi_thread_mode random
 sudo fcli commit
-
+echo "Finished netflow configuration"
+sleep 5
 # Update and install Softflowd
 sudo apt update
 sudo apt install -y softflowd
@@ -68,10 +81,7 @@ sudo systemctl start softflowd
 
 # Install and configure UFW
 sudo apt install -y ufw
-sudo ufw allow proto tcp from any to any
-sudo ufw allow proto udp from any to any
-sudo ufw default allow outgoing
-sudo ufw enable
+
 sudo service fastnetmon restart
 sudo systemctl softflowd restart
 sudo fastnetmon_client
