@@ -47,25 +47,37 @@ sudo service fastnetmon start
 sudo service fastnetmon restart
 sudo systemctl restart fastnetmon
 
-# Create Softflowd systemd service file
-sudo bash -c 'cat <<EOF > /etc/systemd/system/softflowd.service
-[Unit]
-Description=Softflowd NetFlow Exporter
-After=network.target
+# Define the fastnetmon configuration
+FASTNETMON_CONF="/etc/init/fastnetmon.conf"
 
-[Service]
-ExecStart=/usr/sbin/softflowd -i eth0 -n 127.0.0.1:2055
-Restart=on-failure
+# Add netflow settings to fastnetmon configuration file
+echo -e "netflow = on\nnetflow_port = 2055" | sudo tee -a $FASTNETMON_CONF
 
-[Install]
-WantedBy=multi-user.target
-EOF'
+# Update package lists
+sudo apt-get update
+
+# Install pmacct
+sudo apt-get install -y pmacct
+
+# Define the pmacct configuration
+PMACCT_CONF="/etc/pmacct/pmacctd.conf"
+
+# Add settings to pmacct configuration file
+echo -e "plugins: nfprobe\nnfacctd_port: 2055" | sudo tee -a $PMACCT_CONF
+
+# Start pmacctd with the specified interface and configuration file
+sudo pmacctd -i eth0 -f $PMACCT_CONF
 
 # Enable and start Softflowd service
-sudo systemctl enable softflowd
-sudo systemctl start softflowd
+sudo systemctl enable fastnetmon
+sudo systemctl start fastnetmon
+sudo service fastnetmon enable
+sudo service fastnetmon restart
+sudo service fastnetmon restart
+sudo fcli commit
+sudo systemctl daemon-reload
 
-echo "======| Configured Softflowd |======"
+echo "======| Configured pmacct |======"
 sleep 5
 
 sudo fcli set main netflow_sampling_ratio 1
