@@ -1,5 +1,8 @@
 #!/bin/bash
 
+read -p "$(printf "What to install?\n[0] Both\n[1] Agent\n")" input
+
+if [ "$input" -eq 0 ]; then
 echo "[1/10] Installing dependencies..."
 sudo apt-get update -qq
 sudo apt-get upgrade -y -qq
@@ -55,3 +58,21 @@ sudo systemctl enable mysql
 echo "[10/10] Successful Installation"
 sudo cat /root/ogp_user_password
 sudo cat /root/ogp_panel_mysql_info
+
+elif [ "$input" -eq 0 ]; then
+
+sudo apt-get update -qq
+sudo apt-get upgrade -y -qq
+sudo apt-get install -y -qq libxml-parser-perl libpath-class-perl perl-modules screen rsync sudo e2fsprogs unzip subversion libarchive-extract-perl pure-ftpd libarchive-zip-perl libc6 libgcc1 git curl
+sudo apt-get install -y -qq libc6-i386
+sudo apt-get install -y -qq libgcc1:i386
+sudo apt-get install -y -qq lib32gcc1
+sudo apt-get install -y -qq lib32gcc-s1
+sudo apt-get install -y -qq libhttp-daemon-perl
+wget -N -q "https://github.com/OpenGamePanel/Easy-Installers/raw/master/Linux/Debian-Ubuntu/ogp-agent-latest.deb" -O "ogp-agent-latest.deb"
+sudo dpkg -i "ogp-agent-latest.deb" > /dev/null 2>&1
+sudo cat /root/ogp_user_password
+
+else
+    echo "Invalid input. Please enter 0 or 1."
+fi
