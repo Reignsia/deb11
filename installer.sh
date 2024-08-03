@@ -1,8 +1,13 @@
 #!/bin/bash
 
-read -p "$(printf "What to install?\n[0] Both\n[1] Agent\nInput: ")" input
+echo "What to install?"
+echo "[0] Both"
+echo "[1] Agent"
+read -p "Input: " choice
 
-if [ "$input" -eq 0 ]; then
+case $choice in
+    0)
+    
 echo "[1/10] Installing dependencies..."
 sudo apt-get update -qq
 sudo apt-get upgrade -y -qq
@@ -59,7 +64,8 @@ echo "[10/10] Successful Installation"
 sudo cat /root/ogp_user_password
 sudo cat /root/ogp_panel_mysql_info
 
-elif [ "$input" -eq 0 ]; then
+;;
+    1)
 
 sudo apt-get update -qq
 sudo apt-get upgrade -y -qq
@@ -78,6 +84,6 @@ sudo dpkg -i "ogp-agent-latest.deb" > /dev/null 2>&1
 echo "[2/2] Done"
 sudo cat /root/ogp_user_password
 
-else
-    echo "Invalid input. Please enter 0 or 1."
-fi
+;;
+    *)
+    esac
