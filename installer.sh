@@ -54,3 +54,5 @@ sudo systemctl enable mariadb
 sudo systemctl enable mysql
 
 echo "[10/10] Successful Installation"
+sudo cat /root/ogp_user_password
+sudo cat /root/ogp_panel_mysql_info
