@@ -1,6 +1,6 @@
 #!/bin/bash
 
-read -p "$(printf "What to install?\n[0] Both\n[1] Agent\n")" input
+read -p "$(printf "What to install?\n[0] Both\n[1] Agent\nInput: ")" input
 
 if [ "$input" -eq 0 ]; then
 echo "[1/10] Installing dependencies..."
