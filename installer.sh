@@ -63,14 +63,19 @@ elif [ "$input" -eq 0 ]; then
 
 sudo apt-get update -qq
 sudo apt-get upgrade -y -qq
+sudo dpkg --add-architecture i386 -qq
+sudo apt-get update -qq
+sudo apt-get install -y -qq libstdc++6:i386
 sudo apt-get install -y -qq libxml-parser-perl libpath-class-perl perl-modules screen rsync sudo e2fsprogs unzip subversion libarchive-extract-perl pure-ftpd libarchive-zip-perl libc6 libgcc1 git curl
 sudo apt-get install -y -qq libc6-i386
 sudo apt-get install -y -qq libgcc1:i386
 sudo apt-get install -y -qq lib32gcc1
 sudo apt-get install -y -qq lib32gcc-s1
 sudo apt-get install -y -qq libhttp-daemon-perl
+echo "[1/2] Installing dependencies..."
 wget -N -q "https://github.com/OpenGamePanel/Easy-Installers/raw/master/Linux/Debian-Ubuntu/ogp-agent-latest.deb" -O "ogp-agent-latest.deb"
 sudo dpkg -i "ogp-agent-latest.deb" > /dev/null 2>&1
+echo "[2/2] Done"
 sudo cat /root/ogp_user_password
 
 else
