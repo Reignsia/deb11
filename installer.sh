@@ -69,7 +69,7 @@ sudo cat /root/ogp_panel_mysql_info
 
 sudo apt-get update -qq
 sudo apt-get upgrade -y -qq
-sudo dpkg --add-architecture i386 -qq
+sudo dpkg --add-architecture i386 
 sudo apt-get update -qq
 sudo apt-get install -y -qq libstdc++6:i386
 sudo apt-get install -y -qq libxml-parser-perl libpath-class-perl perl-modules screen rsync sudo e2fsprogs unzip subversion libarchive-extract-perl pure-ftpd libarchive-zip-perl libc6 libgcc1 git curl
