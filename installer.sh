@@ -46,4 +46,11 @@ echo "[8/10] Opening all ports..."
 sudo iptables -A INPUT -p tcp -j ACCEPT && sudo iptables -A INPUT -p udp -j ACCEPT && sudo iptables -A OUTPUT -p tcp -j ACCEPT && sudo iptables -A OUTPUT -p udp -j ACCEPT
 sudo iptables-save | sudo tee /etc/iptables/rules.v4
 
-echo "[9/] Enabling all systemd..."
+echo "[9/10] Enabling all systemd..."
+sudo systemctl restart apache2
+sudo systemctl enable apache2
+sudo systemctl enable ogp_agent
+sudo systemctl enable mariadb
+sudo systemctl enable mysql
+
+echo "[10/10] Successful Installation"
