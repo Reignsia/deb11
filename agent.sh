@@ -4,6 +4,8 @@ sudo apt-get install -y lib32gcc1
 sudo apt-get install -y lib32gcc-s1
 sudo apt-get install -y libhttp-daemon-perl
 sudo apt-get install -y libarchive-extract-perl
+sudo apt-get install iptables
+sudo apt-get install iptables-persistent
 
 sudo dpkg --add-architecture i386
 sudo apt-get update
@@ -14,11 +16,11 @@ sudo dpkg -i "ogp-agent-latest.deb"
 
 (crontab -l 2>/dev/null; echo "0 * * * * echo 3 > /proc/sys/vm/drop_caches") | crontab -
 
-iptables -A INPUT -p tcp --dport 1:65535 -j ACCEPT
-iptables -A INPUT -p udp --dport 1:65535 -j ACCEPT
-iptables -A OUTPUT -p tcp --dport 1:65535 -j ACCEPT
-iptables -A OUTPUT -p udp --dport 1:65535 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 1:65535 -j ACCEPT
+sudo iptables -A INPUT -p udp --dport 1:65535 -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 1:65535 -j ACCEPT
+sudo iptables -A OUTPUT -p udp --dport 1:65535 -j ACCEPT
 
-iptables-save > /etc/iptables/rules.v4
+sudo iptables-save > /etc/iptables/rules.v4
 
 sudo cat /root/ogp_user_password
