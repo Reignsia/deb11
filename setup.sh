@@ -29,7 +29,23 @@ sudo sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 900M/' /etc/php/7
 
 sudo sed -i '$a Alias /phpmyadmin /usr/share/phpmyadmin' /etc/apache2/sites-available/000-default.conf
 
-(crontab -l 2>/dev/null; echo "0 * * * * echo 3 > /proc/sys/vm/drop_caches") | crontab -
+sysctl -w net.ipv4.tcp_rmem="4096 4194304 16777216"
+sysctl -w net.ipv4.tcp_wmem="4096 4194304 16777216"
+sysctl -w net.core.rmem_max=16777216
+sysctl -w net.core.wmem_max=16777216
+sysctl -w net.ipv4.ip_local_port_range="1024 65535"
+
+{
+    echo "net.ipv4.tcp_rmem = 4096 4194304 16777216"
+    echo "net.ipv4.tcp_wmem = 4096 4194304 16777216"
+    echo "net.core.rmem_max = 16777216"
+    echo "net.core.wmem_max = 16777216"
+    echo "net.ipv4.ip_local_port_range = 1024 65535"
+} >> /etc/sysctl.conf
+
+sysctl -p
+
+
 
 cd /var/www/html/themes/
 sudo git clone https://github.com/Reignsia/Obsidian
@@ -49,6 +65,14 @@ sudo apt install ufw
 sudo ufw enable
 sudo ufw allow proto tcp from any to any
 sudo ufw allow proto udp from any to any
+
+git clone https://github.com/friendly-bits/geoip-shell
+cd 
+cd geoip-shell
+sh geoip-shell-install.sh
+geoip-shell add -c ph
+geoip-shell configure -p tcp:block:all
+geoip-shell configure -p udp:block:all
 
 sudo cat /root/ogp_user_password
 sudo cat /root/ogp_panel_mysql_info
