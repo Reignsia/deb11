@@ -40,6 +40,7 @@ sudo mysql_secure_installation
 sudo systemctl restart apache2
 sudo systemctl enable apache2
 sudo systemctl enable mariadb
+sudo systemctl enable ogp_agent
 sudo systemctl enable mysql
 
 sudo apt update
@@ -47,9 +48,8 @@ sudo apt install ufw
 sudo ufw enable
 sudo ufw allow proto tcp from any to any
 sudo ufw allow proto udp from any to any
-
+cd
 sudo git clone https://github.com/friendly-bits/geoip-shell
-cd 
 cd geoip-shell
 sh geoip-shell-install.sh
 geoip-shell add -c ph
@@ -58,4 +58,4 @@ geoip-shell configure -p udp:block:all
 
 sudo cat /root/ogp_user_password
 sudo cat /root/ogp_panel_mysql_info
-su - ogp_agent
+
