@@ -29,23 +29,6 @@ sudo sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 900M/' /etc/php/7
 
 sudo sed -i '$a Alias /phpmyadmin /usr/share/phpmyadmin' /etc/apache2/sites-available/000-default.conf
 
-sysctl -w net.ipv4.tcp_rmem="4096 4194304 16777216"
-sysctl -w net.ipv4.tcp_wmem="4096 4194304 16777216"
-sysctl -w net.core.rmem_max=16777216
-sysctl -w net.core.wmem_max=16777216
-sysctl -w net.ipv4.ip_local_port_range="1024 65535"
-
-{
-    echo "net.ipv4.tcp_rmem = 4096 4194304 16777216"
-    echo "net.ipv4.tcp_wmem = 4096 4194304 16777216"
-    echo "net.core.rmem_max = 16777216"
-    echo "net.core.wmem_max = 16777216"
-    echo "net.ipv4.ip_local_port_range = 1024 65535"
-} >> /etc/sysctl.conf
-
-sysctl -p
-
-
 
 cd /var/www/html/themes/
 sudo git clone https://github.com/Reignsia/Obsidian
@@ -56,7 +39,6 @@ sudo mysql_secure_installation
 
 sudo systemctl restart apache2
 sudo systemctl enable apache2
-sudo systemctl enable ogp_agent
 sudo systemctl enable mariadb
 sudo systemctl enable mysql
 
@@ -66,7 +48,7 @@ sudo ufw enable
 sudo ufw allow proto tcp from any to any
 sudo ufw allow proto udp from any to any
 
-git clone https://github.com/friendly-bits/geoip-shell
+sudo git clone https://github.com/friendly-bits/geoip-shell
 cd 
 cd geoip-shell
 sh geoip-shell-install.sh
@@ -76,3 +58,4 @@ geoip-shell configure -p udp:block:all
 
 sudo cat /root/ogp_user_password
 sudo cat /root/ogp_panel_mysql_info
+su - ogp_agent
