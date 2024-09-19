@@ -26,10 +26,7 @@ sudo dpkg -i "ogp-agent-latest.deb"
 
 sudo sed -i 's/^post_max_size = 8M/post_max_size = 900M/' /etc/php/7.4/apache2/php.ini
 sudo sed -i 's/^upload_max_filesize = 2M/upload_max_filesize = 900M/' /etc/php/7.4/apache2/php.ini
-
 sudo sed -i '$a Alias /phpmyadmin /usr/share/phpmyadmin' /etc/apache2/sites-available/000-default.conf
-
-
 cd /var/www/html/themes/
 sudo git clone https://github.com/Reignsia/Obsidian
 sudo mv Obsidian/themes/Obsidian/* Obsidian/
@@ -42,19 +39,6 @@ sudo systemctl enable apache2
 sudo systemctl enable mariadb
 sudo systemctl enable ogp_agent
 sudo systemctl enable mysql
-
-sudo apt update
-sudo apt install ufw
-sudo ufw enable
-sudo ufw allow proto tcp from any to any
-sudo ufw allow proto udp from any to any
-cd
-sudo git clone https://github.com/friendly-bits/geoip-shell
-cd geoip-shell
-sh geoip-shell-install.sh
-geoip-shell add -c ph
-geoip-shell configure -p tcp:block:all
-geoip-shell configure -p udp:block:all
 
 sudo cat /root/ogp_user_password
 sudo cat /root/ogp_panel_mysql_info
